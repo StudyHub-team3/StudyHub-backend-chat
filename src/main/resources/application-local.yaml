@@ -17,3 +17,6 @@ spring:
     open-in-view: false
   kafka:
     bootstrap-servers: ${KAFKA_SERVER}
+  cloud:
+    config:
+      enabled: false
