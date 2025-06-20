@@ -1,0 +1,5 @@
+spring:
+  config:
+    import:
+      - file:/etc/config/application-dev.yml
+      - file:/etc/kafka/application-dev-kafka.yml
