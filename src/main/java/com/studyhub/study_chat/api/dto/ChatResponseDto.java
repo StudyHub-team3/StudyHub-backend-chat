@@ -17,7 +17,8 @@ public class ChatResponseDto {
             Object content = switch (chatMessage.getMessageType()) {
                 case USER_MESSAGE -> UserMessageEventResponse.toDto(chatMessage);
                 case USER_REPLY -> UserReplyEventResponse.toDto(chatMessage);
-                case SYSTEM_USER_JOINED -> SystemUserJoinedEventResponse.toDto(chatMessage);
+                case SYSTEM_STUDY_CREW_JOINED, SYSTEM_STUDY_CREW_QUITED ->
+                    SystemStudyCrewMoveEventResponse.toDto(chatMessage);
                 case SYSTEM_BOARD_CREATED -> SystemBoardCreatedEventResponse.toDto(chatMessage);
             };
             return new ChatEvent(
@@ -49,11 +50,11 @@ public class ChatResponseDto {
         }
     }
 
-    public record SystemUserJoinedEventResponse(
+    public record SystemStudyCrewMoveEventResponse(
         Long speakerId
     ) {
-        public static SystemUserJoinedEventResponse toDto(ChatMessage chatMessage) {
-            return new SystemUserJoinedEventResponse(chatMessage.getSpeakerId());
+        public static SystemStudyCrewMoveEventResponse toDto(ChatMessage chatMessage) {
+            return new SystemStudyCrewMoveEventResponse(chatMessage.getSpeakerId());
         }
     }
 
