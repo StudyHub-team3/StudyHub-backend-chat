@@ -10,7 +10,6 @@ import com.studyhub.study_chat.domain.repository.ChatMessageRepository;
 import com.studyhub.study_chat.domain.repository.ChatRepository;
 import com.studyhub.study_chat.event.event.KafkaEventToChatMessage;
 import com.studyhub.study_chat.event.event.study.StudyEvent;
-import com.studyhub.study_chat.event.event.study.StudyEventType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+
+import static com.studyhub.study_chat.event.event.study.StudyEventType.STUDY_CREATED;
+import static com.studyhub.study_chat.event.event.study.StudyEventType.STUDY_DELETED;
 
 @Service
 @RequiredArgsConstructor
@@ -43,8 +45,12 @@ public class ChatService {
 
     @Transactional
     public void handleEvent(KafkaEventToChatMessage event) {
-        if (StudyEventType.STUDY_CREATED.equals(event.eventType())) {
+        if (STUDY_CREATED.equals(event.eventType())) {
             createStudyChat((StudyEvent) event);
+            return;
+        }
+        if (STUDY_DELETED.equals(event.eventType())) {
+            removeStudyChat((StudyEvent) event);
             return;
         }
         Chat chat = chatRepository.findByStudyId(event.studyId())
@@ -56,6 +62,13 @@ public class ChatService {
         if (chatRepository.findByStudyId(event.studyId()).isPresent())
             throw new BadParameter("이미 채팅방이 존재합니다");
         chatRepository.save(Chat.builder().studyId(event.studyId()).build());
+    }
+
+    private void removeStudyChat(StudyEvent event) {
+        Chat chat = chatRepository.findByStudyId(event.studyId())
+            .orElseThrow(() -> new BadParameter("존재하지 않는 채팅방입니다"));
+        chatMessageRepository.deleteChatMessagesByStudyChat(chat);
+        chatRepository.delete(chat);
     }
 
     private void publishChat(ChatMessage eventChatMessage) {

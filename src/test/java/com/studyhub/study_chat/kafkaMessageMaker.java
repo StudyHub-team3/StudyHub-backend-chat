@@ -24,6 +24,12 @@ public class kafkaMessageMaker {
 
     @Test
     @Disabled
+    public void studyRemoved() {
+        kafkaTemplate.send(Topic.STUDY, new StudyEvent(StudyEventType.STUDY_DELETED, 2L, null));
+    }
+
+    @Test
+    @Disabled
     public void studyCrewJoined() {
         kafkaTemplate.send(Topic.STUDY, new StudyEvent(StudyEventType.STUDY_CREW_JOINED, 1L, 1L));
     }

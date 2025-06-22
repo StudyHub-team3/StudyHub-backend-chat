@@ -4,5 +4,6 @@ public enum StudyEventType {
     STUDY_CREATED,
     STUDY_CREW_JOINED,
     STUDY_CREW_QUITED,
+    STUDY_DELETED,
     ;
 }
