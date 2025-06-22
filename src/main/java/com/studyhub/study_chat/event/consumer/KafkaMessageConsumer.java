@@ -38,7 +38,7 @@ public class KafkaMessageConsumer {
     )
     void listenStudyEvent(StudyEvent event, Acknowledgment ack) {
         log.info("event arrived : {}", event.toString());
-        chatService.publishChat(event);
+        chatService.handleEvent(event);
         ack.acknowledge();
     }
 
@@ -49,7 +49,7 @@ public class KafkaMessageConsumer {
     )
     void listenStudyEvent(BoardEvent event, Acknowledgment ack) {
         log.info("event arrived : {}", event.toString());
-        chatService.publishChat(event);
+        chatService.handleEvent(event);
         ack.acknowledge();
     }
 }

@@ -15,10 +15,10 @@ public class ChatResponseDto {
         Slice<ChatEvent> chatEvents,
         LocalDateTime threshold
     ) {
-        public static ChatHistory toDto(Long chatChatId, Slice<ChatMessage> chatMessageSlice, LocalDateTime prevThreshold) {
+        public static ChatHistory toDto(Long studyChatId, Slice<ChatMessage> chatMessageSlice, LocalDateTime prevThreshold) {
             Optional<ChatMessage> oldestMessage = chatMessageSlice.getContent().stream().min(Comparator.comparing(ChatMessage::getCreatedAt));
             return new ChatHistory(
-                chatChatId,
+                studyChatId,
                 new SliceImpl<>(
                     chatMessageSlice.getContent().stream().map(ChatEvent::toDto).toList(),
                     chatMessageSlice.getPageable(),

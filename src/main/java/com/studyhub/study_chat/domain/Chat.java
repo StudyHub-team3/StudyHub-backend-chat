@@ -17,5 +17,5 @@ public class Chat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "study_id", nullable = false)
-    private String studyId;
+    private Long studyId;
 }

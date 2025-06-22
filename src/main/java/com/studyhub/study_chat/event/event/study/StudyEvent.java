@@ -13,6 +13,9 @@ public record StudyEvent(
 ) implements KafkaEventToChatMessage {
     public ChatMessage toChatMessage(Chat studyChat) {
         switch (eventType) {
+            case STUDY_CREATED -> {
+                return null;
+            }
             case STUDY_CREW_JOINED -> {
                 return ChatMessage.builder()
                     .studyChat(studyChat)

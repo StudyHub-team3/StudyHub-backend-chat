@@ -16,7 +16,7 @@ public class ChatRequestDto {
                 .content(content)
                 .speakerId(speakerId)
                 .messageType(messageType != null ? messageType : MessageType.USER_MESSAGE)
-                .replyFor(replyForChatMessage.getId())
+                .replyFor(replyForChatMessage != null ? replyForChatMessage.getId() : null)
                 .build();
         }
     }

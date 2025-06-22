@@ -7,4 +7,6 @@ public interface KafkaEventToChatMessage {
     Long studyId();
 
     ChatMessage toChatMessage(Chat studyChat);
+
+    Enum eventType();
 }

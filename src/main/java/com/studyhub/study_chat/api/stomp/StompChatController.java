@@ -16,10 +16,10 @@ public class StompChatController {
 
     @MessageMapping("/{studyChatId}/send/{speakerId}")
     public void chat(
-        @DestinationVariable Long chatChatId,
+        @DestinationVariable Long studyChatId,
         @DestinationVariable Long speakerId, // TODO security 작업 완료 후 context에서 추출해서 사용할 예정
         @Payload ChatMessageRequest request
     ) {
-        chatService.publishChat(chatChatId, speakerId, request);
+        chatService.publishChat(studyChatId, speakerId, request);
     }
 }

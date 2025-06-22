@@ -9,6 +9,8 @@ import com.studyhub.study_chat.domain.ChatMessage;
 import com.studyhub.study_chat.domain.repository.ChatMessageRepository;
 import com.studyhub.study_chat.domain.repository.ChatRepository;
 import com.studyhub.study_chat.event.event.KafkaEventToChatMessage;
+import com.studyhub.study_chat.event.event.study.StudyEvent;
+import com.studyhub.study_chat.event.event.study.StudyEventType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
@@ -40,16 +42,32 @@ public class ChatService {
     }
 
     @Transactional
-    public void publishChat(KafkaEventToChatMessage event) {
-        Chat chat = chatRepository.findById(event.studyId())
+    public void handleEvent(KafkaEventToChatMessage event) {
+        if (StudyEventType.STUDY_CREATED.equals(event.eventType())) {
+            createStudyChat((StudyEvent) event);
+            return;
+        }
+        Chat chat = chatRepository.findByStudyId(event.studyId())
             .orElseThrow(() -> new BadParameter("존재하지 않는 채팅방입니다"));
-        ChatMessage chatMessage = chatMessageRepository.save(event.toChatMessage(chat));
-        applicationEventPublisher.publishEvent(ChatEvent.toDto(chatMessage));
+        publishChat(event.toChatMessage(chat));
+    }
+
+    private void createStudyChat(StudyEvent event) {
+        if (chatRepository.findByStudyId(event.studyId()).isPresent())
+            throw new BadParameter("이미 채팅방이 존재합니다");
+        chatRepository.save(Chat.builder().studyId(event.studyId()).build());
+    }
+
+    private void publishChat(ChatMessage eventChatMessage) {
+        if (eventChatMessage != null) {
+            ChatMessage chatMessage = chatMessageRepository.save(eventChatMessage);
+            applicationEventPublisher.publishEvent(ChatEvent.toDto(chatMessage));
+        }
     }
 
     @Transactional(readOnly = true)
     public ChatHistory getHistory(Long studyId, LocalDateTime threshold, int amount) {
-        Chat chat = chatRepository.findById(studyId)
+        Chat chat = chatRepository.findByStudyId(studyId)
             .orElseThrow(() -> new BadParameter("존재하지 않는 채팅방입니다"));
         Slice<ChatMessage> chatMessageSlice = chatMessageRepository.getChatMessagesByStudyChatAndCreatedAtIsLessThan(
             chat,
