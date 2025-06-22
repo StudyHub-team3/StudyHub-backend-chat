@@ -7,7 +7,7 @@ import com.studyhub.study_chat.domain.Chat;
 import com.studyhub.study_chat.domain.ChatMessage;
 import com.studyhub.study_chat.domain.repository.ChatMessageRepository;
 import com.studyhub.study_chat.domain.repository.ChatRepository;
-import com.studyhub.study_chat.event.event.study.StudyEvent;
+import com.studyhub.study_chat.event.event.KafkaEventToChatMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -34,10 +34,10 @@ public class ChatService {
     }
 
     @Transactional
-    public void publishChat(StudyEvent event) {
+    public void publishChat(KafkaEventToChatMessage event) {
         Chat chat = chatRepository.findById(event.studyId())
             .orElseThrow(() -> new BadParameter("존재하지 않는 채팅방입니다"));
-        ChatMessage chatMessage = chatMessageRepository.save(event.toEntity(chat));
+        ChatMessage chatMessage = chatMessageRepository.save(event.toChatMessage(chat));
         applicationEventPublisher.publishEvent(ChatEvent.toDto(chatMessage));
     }
 }

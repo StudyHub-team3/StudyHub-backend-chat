@@ -1,4 +1,4 @@
-package com.studyhub.study_chat.event.event.study;
+package com.studyhub.study_chat.event.event.board;
 
 import com.studyhub.study_chat.common.exception.NotFound;
 import com.studyhub.study_chat.domain.Chat;
@@ -6,25 +6,20 @@ import com.studyhub.study_chat.domain.ChatMessage;
 import com.studyhub.study_chat.domain.MessageType;
 import com.studyhub.study_chat.event.event.KafkaEventToChatMessage;
 
-public record StudyEvent(
-    StudyEventType eventType,
+public record BoardEvent(
+    BoardEventType eventType,
     Long studyId,
-    Long userId
+    Long boardId,
+    Long authorId
 ) implements KafkaEventToChatMessage {
     public ChatMessage toChatMessage(Chat studyChat) {
         switch (eventType) {
-            case STUDY_CREW_JOINED -> {
+            case BOARD_CREATED -> {
                 return ChatMessage.builder()
                     .studyChat(studyChat)
-                    .speakerId(userId)
-                    .messageType(MessageType.SYSTEM_STUDY_CREW_JOINED)
-                    .build();
-            }
-            case STUDY_CREW_QUITED -> {
-                return ChatMessage.builder()
-                    .studyChat(studyChat)
-                    .speakerId(userId)
-                    .messageType(MessageType.SYSTEM_STUDY_CREW_QUITED)
+                    .speakerId(authorId)
+                    .messageType(MessageType.SYSTEM_BOARD_CREATED)
+                    .boardId(boardId)
                     .build();
             }
             default -> throw new NotFound("처리되지 않은 이벤트가 발생했습니다.");
