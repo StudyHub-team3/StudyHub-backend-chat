@@ -21,14 +21,20 @@ public class ChatMessage {
     private Long id;
     @JoinColumn(name = "study_chat_id")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Chat chatId;
-    @Column(name = "study_id", nullable = false)
+    private Chat studyChat;
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
-    @Column(name = "speaker_id", nullable = false)
+    @Column(name = "speaker_id")
     private Long speakerId;
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
     @Enumerated(EnumType.STRING)
+    @Column(name = "message_type", nullable = false)
     private MessageType messageType;
+    @JoinColumn(name = "reply_for_chat_message_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ChatMessage replyFor;
+    @Column(name = "board_id")
+    private Long boardId;
 }
