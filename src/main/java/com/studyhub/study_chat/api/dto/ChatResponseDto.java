@@ -2,10 +2,33 @@ package com.studyhub.study_chat.api.dto;
 
 import com.studyhub.study_chat.domain.ChatMessage;
 import com.studyhub.study_chat.domain.MessageType;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.Optional;
 
 public class ChatResponseDto {
+    public record ChatHistory(
+        Long studyChatId,
+        Slice<ChatEvent> chatEvents,
+        LocalDateTime threshold
+    ) {
+        public static ChatHistory toDto(Long chatChatId, Slice<ChatMessage> chatMessageSlice, LocalDateTime prevThreshold) {
+            Optional<ChatMessage> oldestMessage = chatMessageSlice.getContent().stream().min(Comparator.comparing(ChatMessage::getCreatedAt));
+            return new ChatHistory(
+                chatChatId,
+                new SliceImpl<>(
+                    chatMessageSlice.getContent().stream().map(ChatEvent::toDto).toList(),
+                    chatMessageSlice.getPageable(),
+                    chatMessageSlice.hasNext()
+                ),
+                oldestMessage.map(ChatMessage::getCreatedAt).orElse(prevThreshold)
+            );
+        }
+    }
+
     public record ChatEvent(
         MessageType messageType,
         Long studyChatId,
@@ -46,7 +69,7 @@ public class ChatResponseDto {
         Long replyForChatMessageId
     ) {
         public static UserReplyEventResponse toDto(ChatMessage chatMessage) {
-            return new UserReplyEventResponse(chatMessage.getContent(), chatMessage.getSpeakerId(), chatMessage.getReplyFor().getId());
+            return new UserReplyEventResponse(chatMessage.getContent(), chatMessage.getSpeakerId(), chatMessage.getReplyFor());
         }
     }
 

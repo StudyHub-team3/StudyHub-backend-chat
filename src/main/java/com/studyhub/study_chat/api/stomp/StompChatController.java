@@ -14,7 +14,7 @@ import org.springframework.stereotype.Controller;
 public class StompChatController {
     private final ChatService chatService;
 
-    @MessageMapping("/{chatChatId}/send/{speakerId}")
+    @MessageMapping("/{studyChatId}/send/{speakerId}")
     public void chat(
         @DestinationVariable Long chatChatId,
         @DestinationVariable Long speakerId, // TODO security 작업 완료 후 context에서 추출해서 사용할 예정

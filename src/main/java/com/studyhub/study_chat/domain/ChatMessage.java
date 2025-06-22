@@ -32,9 +32,8 @@ public class ChatMessage {
     @Enumerated(EnumType.STRING)
     @Column(name = "message_type", nullable = false)
     private MessageType messageType;
-    @JoinColumn(name = "reply_for_chat_message_id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private ChatMessage replyFor;
+    @Column(name = "reply_for_chat_message_id")
+    private Long replyFor;
     @Column(name = "board_id")
     private Long boardId;
 }
