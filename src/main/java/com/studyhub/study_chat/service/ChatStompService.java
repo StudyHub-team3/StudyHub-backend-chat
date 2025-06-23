@@ -20,6 +20,6 @@ public class ChatStompService {
     }
 
     public void subscribeChat(ChatEvent chatEvent) {
-        simpMessagingTemplate.convertAndSend("/topic/chat/study/" + chatEvent.studyChatId(), chatEvent);
+        simpMessagingTemplate.convertAndSend("/topic/chat/study/" + chatEvent.data().studyChatId(), chatEvent);
     }
 }

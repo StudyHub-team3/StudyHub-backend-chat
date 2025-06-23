@@ -8,7 +8,7 @@ import com.studyhub.study_chat.domain.Chat;
 import com.studyhub.study_chat.domain.ChatMessage;
 import com.studyhub.study_chat.domain.repository.ChatMessageRepository;
 import com.studyhub.study_chat.domain.repository.ChatRepository;
-import com.studyhub.study_chat.event.event.KafkaEventToChatMessage;
+import com.studyhub.study_chat.event.event.KafkaEvent;
 import com.studyhub.study_chat.event.event.study.StudyEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -44,7 +44,7 @@ public class ChatService {
     }
 
     @Transactional
-    public void handleEvent(KafkaEventToChatMessage event) {
+    public void handleEvent(KafkaEvent event) {
         if (STUDY_CREATED.equals(event.eventType())) {
             createStudyChat((StudyEvent) event);
             return;
@@ -53,19 +53,19 @@ public class ChatService {
             removeStudyChat((StudyEvent) event);
             return;
         }
-        Chat chat = chatRepository.findByStudyId(event.studyId())
+        Chat chat = chatRepository.findByStudyId(event.data().studyId())
             .orElseThrow(() -> new BadParameter("존재하지 않는 채팅방입니다"));
         publishChat(event.toChatMessage(chat));
     }
 
     private void createStudyChat(StudyEvent event) {
-        if (chatRepository.findByStudyId(event.studyId()).isPresent())
+        if (chatRepository.findByStudyId(event.data().studyId()).isPresent())
             throw new BadParameter("이미 채팅방이 존재합니다");
-        chatRepository.save(Chat.builder().studyId(event.studyId()).build());
+        chatRepository.save(Chat.builder().studyId(event.data().studyId()).build());
     }
 
     private void removeStudyChat(StudyEvent event) {
-        Chat chat = chatRepository.findByStudyId(event.studyId())
+        Chat chat = chatRepository.findByStudyId(event.data().studyId())
             .orElseThrow(() -> new BadParameter("존재하지 않는 채팅방입니다"));
         chatMessageRepository.deleteChatMessagesByStudyChat(chat);
         chatRepository.delete(chat);
