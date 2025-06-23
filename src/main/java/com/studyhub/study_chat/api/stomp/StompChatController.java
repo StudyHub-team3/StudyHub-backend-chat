@@ -9,7 +9,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
 
 @Controller
-@MessageMapping("/chat")
+@MessageMapping("/study-chat")
 @RequiredArgsConstructor
 public class StompChatController {
     private final ChatService chatService;

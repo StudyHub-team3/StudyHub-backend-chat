@@ -1,4 +1,4 @@
-package com.studyhub.study_chat.api.backend;
+package com.studyhub.study_chat.api.api;
 
 import com.studyhub.study_chat.api.dto.ChatResponseDto.ChatHistory;
 import com.studyhub.study_chat.common.dto.ApiResponseDto;
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/api/chat")
 @RequiredArgsConstructor
-public class BackendChatController {
+public class ApiChatController {
     private final ChatService chatService;
 
     @GetMapping("/list/study/{studyId}")
