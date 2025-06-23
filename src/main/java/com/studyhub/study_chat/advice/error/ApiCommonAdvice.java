@@ -19,6 +19,7 @@ public class ApiCommonAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({BadParameter.class})
     public ApiResponseDto<String> handleBadParameter(BadParameter e) {
+        log.info("BadParameter", e);
         return ApiResponseDto.createError(
             e.getErrorCode(),
             e.getErrorMessage()
@@ -28,6 +29,7 @@ public class ApiCommonAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({NotFound.class})
     public ApiResponseDto<String> handleNotFound(NotFound e) {
+        log.info("NotFound", e);
         return ApiResponseDto.createError(
             e.getErrorCode(),
             e.getErrorMessage()
@@ -37,6 +39,7 @@ public class ApiCommonAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({ClientError.class})
     public ApiResponseDto<String> handleClientError(ClientError e) {
+        log.info("ClientError", e);
         return ApiResponseDto.createError(
             e.getErrorCode(),
             e.getErrorMessage()
@@ -46,6 +49,7 @@ public class ApiCommonAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({NoResourceFoundException.class})
     public ApiResponseDto<String> handleNoResourceFoundException(Exception e) {
+        log.info("NoResourceFoundException", e);
         return ApiResponseDto.createError(
             "NoResourceError",
             "리소스를 찾을 수 없습니다."
@@ -55,6 +59,7 @@ public class ApiCommonAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler({Exception.class})
     public ApiResponseDto<String> handleException(Exception e) {
+        log.error("UnCaughtError", e);
         return ApiResponseDto.createError(
             "ServerError",
             "서버 에러입니다."

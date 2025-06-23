@@ -12,7 +12,7 @@ public class WebSocketMessageBrokerConfig implements WebSocketMessageBrokerConfi
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry
-            .addEndpoint("/stomp")
+            .addEndpoint("/api/chat/stomp")
 //            .setAllowedOriginPatterns(allowedOrigins)
             .withSockJS();
         WebSocketMessageBrokerConfigurer.super.registerStompEndpoints(registry);
@@ -21,7 +21,7 @@ public class WebSocketMessageBrokerConfig implements WebSocketMessageBrokerConfi
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic", "/queue");
-        registry.setApplicationDestinationPrefixes("/app");
+        registry.setApplicationDestinationPrefixes("/sock/chat/app");
         WebSocketMessageBrokerConfigurer.super.configureMessageBroker(registry);
     }
 }
