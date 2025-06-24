@@ -10,7 +10,7 @@ import com.studyhub.study_chat.event.event.study.StudyEventType;
 import com.studyhub.study_chat.event.event.studyMember.StudyMemberEvent;
 import com.studyhub.study_chat.event.event.studyMember.StudyMemberEvent.StudyMemberEventData;
 import com.studyhub.study_chat.event.event.studyMember.StudyMemberEventType;
-import com.studyhub.study_chat.event.event.studyMember.StudyRole;
+import com.studyhub.study_chat.remote.studyMember.dto.StudyRole;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

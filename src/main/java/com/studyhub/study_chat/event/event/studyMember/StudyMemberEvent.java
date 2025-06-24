@@ -8,6 +8,7 @@ import com.studyhub.study_chat.event.event.KafkaEvent;
 import com.studyhub.study_chat.event.event.KafkaEventToChatMessage;
 import com.studyhub.study_chat.event.event.chat.ChatEvent;
 import com.studyhub.study_chat.event.event.chat.ChatEvent.SystemCrewMoveEventResponse;
+import com.studyhub.study_chat.remote.studyMember.dto.StudyRole;
 
 import java.time.LocalDateTime;
 

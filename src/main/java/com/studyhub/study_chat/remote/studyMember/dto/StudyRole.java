@@ -1,4 +1,4 @@
-package com.studyhub.study_chat.event.event.studyMember;
+package com.studyhub.study_chat.remote.studyMember.dto;
 
 public enum StudyRole {
     MENTOR,

@@ -9,7 +9,7 @@ import com.studyhub.study_chat.domain.ChatMessage;
 import com.studyhub.study_chat.domain.MessageType;
 import com.studyhub.study_chat.event.event.KafkaEvent;
 import com.studyhub.study_chat.event.event.KafkaEventToChatMessage;
-import com.studyhub.study_chat.event.event.studyMember.StudyRole;
+import com.studyhub.study_chat.remote.studyMember.dto.StudyRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
