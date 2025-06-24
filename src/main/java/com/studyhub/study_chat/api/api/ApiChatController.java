@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor
@@ -20,6 +21,6 @@ public class ApiChatController {
         @RequestParam(required = false) LocalDateTime threshold,
         @RequestParam(required = false, defaultValue = "50") Integer amount
     ) {
-        return ApiResponseDto.createOk(chatService.getHistory(studyId, threshold = threshold != null ? threshold : LocalDateTime.now(), amount));
+        return ApiResponseDto.createOk(chatService.getHistory(studyId, threshold != null ? threshold : LocalDateTime.now(), amount));
     }
 }

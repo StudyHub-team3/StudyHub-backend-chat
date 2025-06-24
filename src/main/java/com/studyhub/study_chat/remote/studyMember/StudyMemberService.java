@@ -4,6 +4,7 @@ import com.studyhub.study_chat.common.dto.ApiResponseDto;
 import com.studyhub.study_chat.remote.studyMember.dto.StudyMemberResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.concurrent.CompletableFuture;
 public class StudyMemberService {
     private final RemoteStudyMemberApiService remoteStudyMemberApiService;
 
+    @Async
     public CompletableFuture<List<StudyMemberResponseDto>> getStudyMembers(Long studyId) {
         ApiResponseDto<List<StudyMemberResponseDto>> studyMemberApiServiceMembers = remoteStudyMemberApiService.getMembers(studyId);
         if (!"OK".equals(studyMemberApiServiceMembers.getCode())) {

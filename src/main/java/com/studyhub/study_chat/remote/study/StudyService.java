@@ -4,6 +4,7 @@ import com.studyhub.study_chat.common.dto.ApiResponseDto;
 import com.studyhub.study_chat.remote.study.dto.InternalStudyInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CompletableFuture;
@@ -14,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 public class StudyService {
     private final RemoteStudyBackendService remoteStudyBackendService;
 
+    @Async
     public CompletableFuture<InternalStudyInfoResponse> getStudyInfo(Long studyId) {
         ApiResponseDto<InternalStudyInfoResponse> infoForInternalUse = remoteStudyBackendService.getStudyInfoForInternalUse(studyId);
         if (!"OK".equals(infoForInternalUse.getCode())) {

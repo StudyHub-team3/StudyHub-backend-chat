@@ -4,20 +4,32 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.studyhub.study_chat.domain.ChatMessage;
 import com.studyhub.study_chat.domain.MessageType;
+import com.studyhub.study_chat.remote.study.dto.InternalStudyInfoResponse;
+import com.studyhub.study_chat.remote.studyMember.dto.StudyMemberResponseDto;
+import com.studyhub.study_chat.remote.studyMember.dto.StudyRole;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 public class ChatResponseDto {
     public record ChatHistoryResponse(
         Long studyChatId,
         Slice<ChatMessageResponse> chatMessages,
-        LocalDateTime threshold // TODO 참여 사용자 정보 반환
+        LocalDateTime threshold,
+        List<StudyMemberInfoResponse> studyMemberInfos,
+        StudyInfoResponse studyInfo
     ) {
-        public static ChatHistoryResponse toDto(Long studyChatId, Slice<ChatMessage> chatMessageSlice, LocalDateTime prevThreshold) {
+        public static ChatHistoryResponse toDto(
+            Long studyChatId,
+            Slice<ChatMessage> chatMessageSlice,
+            LocalDateTime prevThreshold,
+            List<StudyMemberResponseDto> studyMemberInfos,
+            InternalStudyInfoResponse studyInfo
+        ) {
             Optional<ChatMessage> oldestMessage = chatMessageSlice.getContent().stream().min(Comparator.comparing(ChatMessage::getCreatedAt));
             return new ChatHistoryResponse(
                 studyChatId,
@@ -26,7 +38,36 @@ public class ChatResponseDto {
                     chatMessageSlice.getPageable(),
                     chatMessageSlice.hasNext()
                 ),
-                oldestMessage.map(ChatMessage::getCreatedAt).orElse(prevThreshold)
+                oldestMessage.map(ChatMessage::getCreatedAt).orElse(prevThreshold),
+                studyMemberInfos == null ? null : studyMemberInfos.stream().map(StudyMemberInfoResponse::toDto).toList(),
+                studyInfo == null ? null : StudyInfoResponse.toDto(studyInfo)
+            );
+        }
+    }
+
+    public record StudyMemberInfoResponse(
+        String userId,
+        String userName,
+        String status,
+        StudyRole role
+    ) {
+        static StudyMemberInfoResponse toDto(StudyMemberResponseDto studyMemberInfo) {
+            return new StudyMemberInfoResponse(studyMemberInfo.userId(), studyMemberInfo.userName(), studyMemberInfo.status(), studyMemberInfo.role());
+        }
+    }
+
+    public record StudyInfoResponse(
+        Long studyId,
+        String groupName,
+        String category,
+        LocalDateTime createdAt
+    ) {
+        static StudyInfoResponse toDto(InternalStudyInfoResponse internalStudyInfoResponse) {
+            return new StudyInfoResponse(
+                internalStudyInfoResponse.studyId(),
+                internalStudyInfoResponse.groupName(),
+                internalStudyInfoResponse.category(),
+                internalStudyInfoResponse.createdAt()
             );
         }
     }
