@@ -3,4 +3,4 @@ spring:
     import:
       - file:/etc/config/application-dev.yml
       - file:/etc/mysql/application-mysql.yml
-      - file:/etc/kafka/application-kafka .yml
+      - file:/etc/kafka/application-kafka.yml
