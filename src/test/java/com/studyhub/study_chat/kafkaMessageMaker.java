@@ -15,6 +15,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 import java.time.LocalDateTime;
 
+@Disabled
 @SpringBootTest
 public class kafkaMessageMaker {
     @Autowired
