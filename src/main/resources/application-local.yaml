@@ -23,3 +23,5 @@ spring:
         config:
           RemoteStudyMemberApiService:
             url: http://localhost:8082
+          RemoteStudyBackendService:
+            url: http://localhost:8083
