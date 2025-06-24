@@ -7,6 +7,10 @@ import com.studyhub.study_chat.event.event.board.BoardEventType;
 import com.studyhub.study_chat.event.event.study.StudyEvent;
 import com.studyhub.study_chat.event.event.study.StudyEvent.StudyEventData;
 import com.studyhub.study_chat.event.event.study.StudyEventType;
+import com.studyhub.study_chat.event.event.studyMember.StudyMemberEvent;
+import com.studyhub.study_chat.event.event.studyMember.StudyMemberEvent.StudyMemberEventData;
+import com.studyhub.study_chat.event.event.studyMember.StudyMemberEventType;
+import com.studyhub.study_chat.event.event.studyMember.StudyRole;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +40,7 @@ public class kafkaMessageMaker {
     @Test
     @Disabled
     public void studyCrewJoined() {
-        kafkaTemplate.send(Topic.STUDY, new StudyEvent(StudyEventType.STUDY_CREW_JOINED, new StudyEventData(1L, 1L), LocalDateTime.now()));
+        kafkaTemplate.send(Topic.STUDY_MEMBER, new StudyMemberEvent(StudyMemberEventType.STUDY_CREW_JOINED, new StudyMemberEventData(1L, 1L, "홍길동", StudyRole.MENTEE), LocalDateTime.now()));
     }
 
     @Test

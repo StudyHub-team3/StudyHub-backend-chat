@@ -1,7 +1,7 @@
 package com.studyhub.study_chat.event.producer;
 
-import com.studyhub.study_chat.api.dto.ChatResponseDto.ChatEvent;
 import com.studyhub.study_chat.event.event.Topic;
+import com.studyhub.study_chat.event.event.chat.ChatEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class KafkaMessageProducer {
         kafkaTemplate.send(topic, message);
     }
 
-    public void sendChat(ChatEvent chatEvent) {
-        kafkaTemplate.send(Topic.CHAT, chatEvent);
+    public void sendChat(ChatEvent chatMessageResponse) {
+        kafkaTemplate.send(Topic.CHAT, chatMessageResponse);
     }
 }
