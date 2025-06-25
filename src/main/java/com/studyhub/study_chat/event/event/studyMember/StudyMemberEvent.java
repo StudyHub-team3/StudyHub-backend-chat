@@ -27,6 +27,7 @@ public record StudyMemberEvent(
                     .studyChat(studyChat)
                     .speakerId(data.userId)
                     .messageType(SYSTEM_STUDY_CREW_JOINED)
+                    .content(data.userName)
                     .build();
             }
             case STUDY_CREW_QUITED -> {
@@ -34,6 +35,7 @@ public record StudyMemberEvent(
                     .studyChat(studyChat)
                     .speakerId(data.userId)
                     .messageType(MessageType.SYSTEM_STUDY_CREW_QUITED)
+                    .content(data.userName)
                     .build();
             }
             default -> throw new NotFound("처리되지 않은 이벤트가 발생했습니다.");
