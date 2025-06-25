@@ -46,7 +46,7 @@ public class ChatResponseDto {
     }
 
     public record StudyMemberInfoResponse(
-        String userId,
+        Long userId,
         String userName,
         String status,
         StudyRole role
