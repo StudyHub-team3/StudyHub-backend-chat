@@ -4,47 +4,88 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.studyhub.study_chat.domain.ChatMessage;
 import com.studyhub.study_chat.domain.MessageType;
+import com.studyhub.study_chat.remote.study.dto.InternalStudyInfoResponse;
+import com.studyhub.study_chat.remote.studyMember.dto.StudyMemberResponseDto;
+import com.studyhub.study_chat.remote.studyMember.dto.StudyRole;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 public class ChatResponseDto {
-    public record ChatHistory(
+    public record ChatHistoryResponse(
         Long studyChatId,
-        Slice<ChatEvent> chatEvents,
-        LocalDateTime threshold
+        Slice<ChatMessageResponse> chatMessages,
+        LocalDateTime threshold,
+        List<StudyMemberInfoResponse> studyMemberInfos,
+        StudyInfoResponse studyInfo
     ) {
-        public static ChatHistory toDto(Long studyChatId, Slice<ChatMessage> chatMessageSlice, LocalDateTime prevThreshold) {
+        public static ChatHistoryResponse toDto(
+            Long studyChatId,
+            Slice<ChatMessage> chatMessageSlice,
+            LocalDateTime prevThreshold,
+            List<StudyMemberResponseDto> studyMemberInfos,
+            InternalStudyInfoResponse studyInfo
+        ) {
             Optional<ChatMessage> oldestMessage = chatMessageSlice.getContent().stream().min(Comparator.comparing(ChatMessage::getCreatedAt));
-            return new ChatHistory(
+            return new ChatHistoryResponse(
                 studyChatId,
                 new SliceImpl<>(
-                    chatMessageSlice.getContent().stream().map(ChatEvent::toDto).toList(),
+                    chatMessageSlice.getContent().stream().map(ChatMessageResponse::toDto).toList(),
                     chatMessageSlice.getPageable(),
                     chatMessageSlice.hasNext()
                 ),
-                oldestMessage.map(ChatMessage::getCreatedAt).orElse(prevThreshold)
+                oldestMessage.map(ChatMessage::getCreatedAt).orElse(prevThreshold),
+                studyMemberInfos == null ? null : studyMemberInfos.stream().map(StudyMemberInfoResponse::toDto).toList(),
+                studyInfo == null ? null : StudyInfoResponse.toDto(studyInfo)
             );
         }
     }
 
-    public record ChatEvent(
+    public record StudyMemberInfoResponse(
+        Long userId,
+        String userName,
+        String status,
+        StudyRole role
+    ) {
+        static StudyMemberInfoResponse toDto(StudyMemberResponseDto studyMemberInfo) {
+            return new StudyMemberInfoResponse(studyMemberInfo.userId(), studyMemberInfo.userName(), studyMemberInfo.status(), studyMemberInfo.role());
+        }
+    }
+
+    public record StudyInfoResponse(
+        Long studyId,
+        String groupName,
+        String category,
+        LocalDateTime createdAt
+    ) {
+        static StudyInfoResponse toDto(InternalStudyInfoResponse internalStudyInfoResponse) {
+            return new StudyInfoResponse(
+                internalStudyInfoResponse.studyId(),
+                internalStudyInfoResponse.groupName(),
+                internalStudyInfoResponse.category(),
+                internalStudyInfoResponse.createdAt()
+            );
+        }
+    }
+
+    public record ChatMessageResponse(
         MessageType eventType,
-        StudyChatMessageData data,
+        ChatMessageData data,
         LocalDateTime timestamp
     ) {
-        public static ChatEvent toDto(ChatMessage chatMessage) {
-            StudyChatMessageData content = switch (chatMessage.getMessageType()) {
-                case USER_MESSAGE -> UserMessageEventResponse.toDto(chatMessage);
-                case USER_REPLY -> UserReplyEventResponse.toDto(chatMessage);
+        public static ChatMessageResponse toDto(ChatMessage chatMessage) {
+            ChatMessageData content = switch (chatMessage.getMessageType()) {
+                case USER_MESSAGE -> UserMessageMessageResponse.toDto(chatMessage);
+                case USER_REPLY -> UserReplyMessageResponse.toDto(chatMessage);
                 case SYSTEM_STUDY_CREW_JOINED, SYSTEM_STUDY_CREW_QUITED ->
-                    SystemStudyCrewMoveEventResponse.toDto(chatMessage);
-                case SYSTEM_BOARD_CREATED -> SystemBoardCreatedEventResponse.toDto(chatMessage);
+                    SystemCrewMoveMessageResponse.toDto(chatMessage);
+                case SYSTEM_BOARD_CREATED -> SystemBoardCreatedMessageResponse.toDto(chatMessage);
             };
-            return new ChatEvent(
+            return new ChatMessageResponse(
                 chatMessage.getMessageType(),
                 content,
                 chatMessage.getCreatedAt()
@@ -54,26 +95,26 @@ public class ChatResponseDto {
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "eventType")
     @JsonSubTypes({
-        @JsonSubTypes.Type(value = UserMessageEventResponse.class, name = "USER_MESSAGE"),
-        @JsonSubTypes.Type(value = UserReplyEventResponse.class, name = "USER_REPLY"),
-        @JsonSubTypes.Type(value = SystemStudyCrewMoveEventResponse.class, name = "SYSTEM_STUDY_CREW_JOINED"),
-        @JsonSubTypes.Type(value = SystemStudyCrewMoveEventResponse.class, name = "SYSTEM_STUDY_CREW_QUITED"),
-        @JsonSubTypes.Type(value = SystemBoardCreatedEventResponse.class, name = "SYSTEM_BOARD_CREATED"),
+        @JsonSubTypes.Type(value = UserMessageMessageResponse.class, name = "USER_MESSAGE"),
+        @JsonSubTypes.Type(value = UserReplyMessageResponse.class, name = "USER_REPLY"),
+        @JsonSubTypes.Type(value = SystemCrewMoveMessageResponse.class, name = "SYSTEM_STUDY_CREW_JOINED"),
+        @JsonSubTypes.Type(value = SystemCrewMoveMessageResponse.class, name = "SYSTEM_STUDY_CREW_QUITED"),
+        @JsonSubTypes.Type(value = SystemBoardCreatedMessageResponse.class, name = "SYSTEM_BOARD_CREATED"),
     })
-    public interface StudyChatMessageData {
+    public interface ChatMessageData {
         Long studyChatId();
 
         Long studyChatMessageId();
     }
 
-    public record UserMessageEventResponse(
+    public record UserMessageMessageResponse(
         Long studyChatId,
         Long studyChatMessageId,
         String content,
         Long speakerId
-    ) implements StudyChatMessageData {
-        public static UserMessageEventResponse toDto(ChatMessage chatMessage) {
-            return new UserMessageEventResponse(
+    ) implements ChatMessageData {
+        public static UserMessageMessageResponse toDto(ChatMessage chatMessage) {
+            return new UserMessageMessageResponse(
                 chatMessage.getStudyChat().getId(),
                 chatMessage.getId(),
                 chatMessage.getContent(),
@@ -82,46 +123,52 @@ public class ChatResponseDto {
         }
     }
 
-    public record UserReplyEventResponse(
+    public record UserReplyMessageResponse(
         Long studyChatId,
         Long studyChatMessageId,
         String content,
         Long speakerId,
-        Long replyForChatMessageId
-    ) implements StudyChatMessageData {
-        public static UserReplyEventResponse toDto(ChatMessage chatMessage) {
-            return new UserReplyEventResponse(
+        Long replyForChatMessageId,
+        String replyForChatMessageAuthorName,
+        String replyForChatMessageContent
+    ) implements ChatMessageData {
+        public static UserReplyMessageResponse toDto(ChatMessage chatMessage) {
+            return new UserReplyMessageResponse(
                 chatMessage.getStudyChat().getId(),
                 chatMessage.getId(),
                 chatMessage.getContent(),
                 chatMessage.getSpeakerId(),
-                chatMessage.getReplyFor()
+                chatMessage.getReplyForChatMessageId(),
+                chatMessage.getReplyForChatMessageAuthorName(),
+                chatMessage.getReplyForChatMessageContent()
             );
         }
     }
 
-    public record SystemStudyCrewMoveEventResponse(
+    public record SystemCrewMoveMessageResponse(
         Long studyChatId,
         Long studyChatMessageId,
-        Long speakerId
-    ) implements StudyChatMessageData {
-        public static SystemStudyCrewMoveEventResponse toDto(ChatMessage chatMessage) {
-            return new SystemStudyCrewMoveEventResponse(
+        Long userId,
+        String userName
+    ) implements ChatMessageData {
+        public static SystemCrewMoveMessageResponse toDto(ChatMessage chatMessage) {
+            return new SystemCrewMoveMessageResponse(
                 chatMessage.getStudyChat().getId(),
                 chatMessage.getId(),
-                chatMessage.getSpeakerId()
+                chatMessage.getSpeakerId(),
+                chatMessage.getContent()
             );
         }
     }
 
-    public record SystemBoardCreatedEventResponse(
+    public record SystemBoardCreatedMessageResponse(
         Long studyChatId,
         Long studyChatMessageId,
-        Long speakerId,
+        Long authorId,
         Long boardId
-    ) implements StudyChatMessageData {
-        public static SystemBoardCreatedEventResponse toDto(ChatMessage chatMessage) {
-            return new SystemBoardCreatedEventResponse(
+    ) implements ChatMessageData {
+        public static SystemBoardCreatedMessageResponse toDto(ChatMessage chatMessage) {
+            return new SystemBoardCreatedMessageResponse(
                 chatMessage.getStudyChat().getId(),
                 chatMessage.getId(),
                 chatMessage.getSpeakerId(),

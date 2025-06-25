@@ -1,6 +1,6 @@
 package com.studyhub.study_chat.service;
 
-import com.studyhub.study_chat.api.dto.ChatResponseDto.ChatEvent;
+import com.studyhub.study_chat.event.event.chat.ChatEvent;
 import com.studyhub.study_chat.event.producer.KafkaMessageProducer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

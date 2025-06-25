@@ -13,7 +13,7 @@ public class WebSocketMessageBrokerConfig implements WebSocketMessageBrokerConfi
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry
             .addEndpoint("/api/chat/stomp")
-//            .setAllowedOriginPatterns(allowedOrigins)
+            .setAllowedOriginPatterns("**")
             .withSockJS();
         WebSocketMessageBrokerConfigurer.super.registerStompEndpoints(registry);
     }

@@ -32,8 +32,12 @@ public class ChatMessage {
     @Enumerated(EnumType.STRING)
     @Column(name = "message_type", nullable = false)
     private MessageType messageType;
-    @Column(name = "reply_for_chat_message_id")
-    private Long replyFor;
     @Column(name = "board_id")
     private Long boardId;
+    @Column(name = "reply_for_chat_message_id")
+    private Long replyForChatMessageId;
+    @Column(name = "reply_for_chat_message_author_name")
+    private String replyForChatMessageAuthorName;
+    @Column(name = "reply_for_chat_message_content", columnDefinition = "TEXT")
+    private String replyForChatMessageContent;
 }

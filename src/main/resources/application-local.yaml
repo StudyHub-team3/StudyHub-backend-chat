@@ -17,3 +17,11 @@ spring:
     open-in-view: false
   kafka:
     bootstrap-servers: ${KAFKA_SERVER}
+  cloud:
+    openfeign:
+      client:
+        config:
+          RemoteStudyMemberApiService:
+            url: http://localhost:8082
+          RemoteStudyBackendService:
+            url: http://localhost:8083

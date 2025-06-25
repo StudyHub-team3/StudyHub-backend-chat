@@ -8,15 +8,19 @@ public class ChatRequestDto {
     public record ChatMessageRequest(
         MessageType messageType,
         String content,
-        Long replyForChatMessageId
+        Long replyForChatMessageId,
+        String replyForChatMessageContent,
+        String replyForChatMessageAuthorName
     ) {
-        public ChatMessage toEntity(Long speakerId, Chat studyChat, ChatMessage replyForChatMessage) {
+        public ChatMessage toEntity(Long speakerId, Chat studyChat) {
             return ChatMessage.builder()
                 .studyChat(studyChat)
                 .content(content)
                 .speakerId(speakerId)
                 .messageType(messageType != null ? messageType : MessageType.USER_MESSAGE)
-                .replyFor(replyForChatMessage != null ? replyForChatMessage.getId() : null)
+                .replyForChatMessageId(replyForChatMessageId)
+                .replyForChatMessageContent(replyForChatMessageContent)
+                .replyForChatMessageAuthorName(replyForChatMessageAuthorName)
                 .build();
         }
     }
